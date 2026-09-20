@@ -247,6 +247,12 @@
             border-bottom-color: #0369a1;
         }
 
+        .key.dash-key {
+            background: #eab308;
+            color: #000000;
+            border-bottom-color: #ca8a04;
+        }
+
         .audio-btn {
             background: rgba(30, 41, 59, 0.85);
             color: #f8fafc;
@@ -300,7 +306,7 @@
         </div>
         <div class="controls-info">
             <h3>🎮 CONTROLS</h3>
-            <p><strong>Player 1 (Apple):</strong> <span class="key">A</span> Left | <span class="key">D</span> Right | <span class="key">W</span> Jump | <span class="key">S</span> Crouch | <span class="key">SPACE</span> / <span class="key">G</span> Shoot | <span class="key">Q</span> Special | <span class="key">E</span> Parry</p>
+            <p><strong>Player 1 (Apple):</strong> <span class="key">A</span> Left | <span class="key">D</span> Right | <span class="key">W</span> Jump | <span class="key">S</span> Crouch | <span class="key dash-key">F</span> Dash | <span class="key">SPACE</span> / <span class="key">G</span> Shoot | <span class="key">Q</span> Special | <span class="key parry-key">E</span> Parry</p>
             <p style="margin-top: 4px;"><strong>Player 2 (Boss Control):</strong> <span class="key">I</span> Attack 1 | <span class="key">O</span> Attack 2</p>
         </div>
     </div>
@@ -336,6 +342,7 @@
         <div><span class="key">A</span> / <span class="key">D</span> Move</div>
         <div><span class="key">W</span> Jump</div>
         <div><span class="key">S</span> Crouch</div>
+        <div><span class="key dash-key">F</span> Dash</div>
         <div><span class="key parry-key">E</span> Parry</div>
         <div><span class="key">SPACE</span> / <span class="key">G</span> Shoot</div>
         <div><span class="key">Q</span> Special</div>
@@ -475,6 +482,7 @@ const keys = {
     jump: false,
     shoot: false,
     parry: false,
+    dash: false,
     special: false,
     bossAttackI: false,
     bossAttackO: false
@@ -487,6 +495,11 @@ window.addEventListener('keydown', (e) => {
     if (e.code === 'KeyS') keys.crouch = true;
     if (e.code === 'KeyW') keys.jump = true;
     
+    if (e.code === 'KeyF') {
+        if (!keys.dash && gameState === 'PLAYING') triggerDash();
+        keys.dash = true;
+    }
+
     // SPACEBAR and G KEY support for shooting
     if (e.code === 'Space' || e.code === 'KeyG') {
         keys.shoot = true;
@@ -522,6 +535,7 @@ window.addEventListener('keyup', (e) => {
     if (e.code === 'KeyD') keys.right = false;
     if (e.code === 'KeyS') keys.crouch = false;
     if (e.code === 'KeyW') keys.jump = false;
+    if (e.code === 'KeyF') keys.dash = false;
     if (e.code === 'Space' || e.code === 'KeyG') keys.shoot = false;
     if (e.code === 'KeyE') keys.parry = false;
     if (e.code === 'KeyQ') keys.special = false;
@@ -553,6 +567,10 @@ const player = {
     parryWindow: 0,
     parryCooldown: 0,
     parryAuraAlpha: 0,
+    dashTimer: 0,
+    dashCooldown: 0,
+    dashDir: 1,
+    dashSpeed: 16,
     steamParticles: [],
     capeAngle: 0
 };
@@ -641,15 +659,31 @@ function spawnParticles(x, y, color, count = 10, speedMult = 1) {
     }
 }
 
+function triggerDash() {
+    if (player.dashCooldown > 0 || player.dashTimer > 0) return;
+    player.dashTimer = 12;
+    player.dashCooldown = 90;
+    player.dashDir = keys.left ? -1 : (keys.right ? 1 : 1);
+    player.flashTimer = Math.max(player.flashTimer, 12);
+    spawnParticles(player.x + player.width / 2, player.y + player.height / 2, '#facc15', 12, 2);
+}
+
 function updatePlayer() {
     let moveDir = 0;
-    if (keys.left) {
-        player.x -= player.speed;
-        moveDir = -1;
-    }
-    if (keys.right) {
-        player.x += player.speed;
-        moveDir = 1;
+
+    if (player.dashTimer > 0) {
+        player.dashTimer--;
+        player.x += player.dashDir * player.dashSpeed;
+        spawnParticles(player.x + (player.dashDir > 0 ? 0 : player.width), player.y + player.height / 2, '#facc15', 2, 0.5);
+    } else {
+        if (keys.left) {
+            player.x -= player.speed;
+            moveDir = -1;
+        }
+        if (keys.right) {
+            player.x += player.speed;
+            moveDir = 1;
+        }
     }
 
     if (player.x < 10) player.x = 10;
@@ -695,6 +729,7 @@ function updatePlayer() {
     if (player.armRecoil > 0) player.armRecoil--;
     if (player.parryWindow > 0) player.parryWindow--;
     if (player.parryCooldown > 0) player.parryCooldown--;
+    if (player.dashCooldown > 0) player.dashCooldown--;
     if (player.parryAuraAlpha > 0) player.parryAuraAlpha = Math.max(0, player.parryAuraAlpha - 0.04);
     if (player.flashTimer > 0) player.flashTimer--;
 
@@ -863,6 +898,8 @@ function resetGame() {
     player.parryWindow = 0;
     player.parryCooldown = 0;
     player.parryAuraAlpha = 0;
+    player.dashTimer = 0;
+    player.dashCooldown = 0;
     player.steamParticles = [];
     player.capeAngle = 0;
 
@@ -2078,6 +2115,15 @@ function drawHUD() {
     } else {
         ctx.fillStyle = '#94a3b8';
         ctx.fillText(`PARRY [E]: COOLDOWN (${parrySecsLeft}s)`, 20, 56);
+    }
+
+    const dashSecsLeft = Math.ceil(player.dashCooldown / 60);
+    if (player.dashCooldown <= 0) {
+        ctx.fillStyle = '#facc15';
+        ctx.fillText('DASH [F]: READY', 200, 56);
+    } else {
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(`DASH [F]: COOLDOWN (${dashSecsLeft}s)`, 200, 56);
     }
 
     ctx.font = 'bold 12px "Segoe UI", sans-serif';

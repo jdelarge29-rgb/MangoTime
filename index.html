@@ -500,10 +500,8 @@ window.addEventListener('keydown', (e) => {
         keys.dash = true;
     }
 
-    // SPACEBAR and G KEY support for shooting
     if (e.code === 'Space' || e.code === 'KeyG') {
         keys.shoot = true;
-        // Prevent web page from scrolling on Spacebar press
         if (e.code === 'Space') e.preventDefault();
     }
 
@@ -598,7 +596,6 @@ const boss = {
     vy: 0,
     attackTimer: 0,
     attackInterval: 120,
-    // Dual Attack Cooldown Management
     cdAttackI: 0,
     cdAttackO: 0,
     maxCdAttackI: 120,
@@ -948,19 +945,18 @@ function resetGame() {
 
 function fireBananaPeel() {
     const gunX = boss.x;
-    const gunY = boss.y + boss.height / 2;
+    // Lowered projectile height so the player must crouch or jump over it
+    const gunY = GROUND_Y - 30;
     
-    // Banana peel projectile with passedPlayer tracking logic
+    // Straight fast projectile traveling strictly left
     bossProjectiles.push({
-        type: 'tracking_banana_peel',
+        type: 'fast_banana_peel',
         x: gunX,
         y: gunY,
-        vx: -5,
-        vy: -1,
-        speed: 5.5,
+        vx: -12,
+        vy: 0,
         radius: 12,
-        rot: 0,
-        passedPlayer: false
+        rot: 0
     });
     triggerScreenShake(7, 12);
     spawnParticles(gunX, gunY, '#facc15', 12, 1.5);
@@ -1059,7 +1055,6 @@ function updateBoss() {
     if (boss.warningTimer > 0) boss.warningTimer--;
     if (boss.greenTintTimer > 0) boss.greenTintTimer--;
     
-    // Decrement Individual Boss Cooldowns
     if (boss.cdAttackI > 0) boss.cdAttackI--;
     if (boss.cdAttackO > 0) boss.cdAttackO--;
 
@@ -1337,31 +1332,9 @@ function updateProjectilesAndCollisions() {
     for (let i = bossProjectiles.length - 1; i >= 0; i--) {
         let p = bossProjectiles[i];
 
-        if (p.type === 'tracking_banana_peel') {
-            const playerCenterX = player.x + player.width / 2;
-            const playerCenterY = player.y + player.height / 2;
-
-            // Check if peel passed the player horizontally (moving left past player)
-            if (!p.passedPlayer && p.x < playerCenterX) {
-                p.passedPlayer = true;
-            }
-
-            if (!p.passedPlayer) {
-                // Tracking behavior until it reaches player's X coordinate
-                const dx = playerCenterX - p.x;
-                const dy = playerCenterY - p.y;
-                const dist = Math.hypot(dx, dy);
-
-                if (dist > 0) {
-                    p.vx = (dx / dist) * p.speed;
-                    p.vy = (dy / dist) * p.speed;
-                }
-            }
-            // Once passed, continues in current vx/vy vector off screen
-
+        if (p.type === 'fast_banana_peel') {
             p.x += p.vx;
-            p.y += p.vy;
-            p.rot += 0.12;
+            p.rot += 0.25;
         } else if (p.type === 'bouncing_banana') {
             p.rot += p.rotSpeed;
             if (p.lifeTimer > 0) {
@@ -1998,7 +1971,7 @@ function drawProjectilesAndParticles() {
     ctx.shadowBlur = 0;
 
     bossProjectiles.forEach(p => {
-        if (p.type === 'tracking_banana_peel') {
+        if (p.type === 'fast_banana_peel') {
             ctx.save();
             ctx.translate(p.x, p.y);
             ctx.rotate(p.rot || 0);
@@ -2199,7 +2172,6 @@ function drawHUD() {
     ctx.lineWidth = 2;
     ctx.strokeRect(520, 32, 350, 18);
 
-    // Dynamic Attack Labels based on Phase
     let nameAttackI = 'BANANAS';
     let nameAttackO = 'MINIONS';
     if (boss.phase === 2) {
@@ -2210,7 +2182,6 @@ function drawHUD() {
         nameAttackO = 'BANANA GUN';
     }
 
-    // BOSS COOLDOWN UI 1 (ATK I)
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 11px "Segoe UI", sans-serif';
     ctx.textAlign = 'left';
@@ -2236,7 +2207,6 @@ function drawHUD() {
         ctx.fillText(`${(boss.cdAttackI / 60).toFixed(1)}s`, 765, 68);
     }
 
-    // BOSS COOLDOWN UI 2 (ATK O)
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 11px "Segoe UI", sans-serif';
     ctx.textAlign = 'left';

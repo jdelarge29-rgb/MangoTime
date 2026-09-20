@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Ready Red Apple</title>
+    <title>The Ready Red Apple vs Banana Boss</title>
     <style>
         * {
             box-sizing: border-box;
@@ -29,7 +29,7 @@
 
         #game-wrapper {
             position: relative;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 152, 0, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 234, 0, 0.2);
             border-radius: 12px;
             overflow: hidden;
             border: 4px solid #2d3748;
@@ -46,7 +46,6 @@
             cursor: crosshair;
         }
 
-        /* Screen Overlays */
         .overlay {
             position: absolute;
             top: 0;
@@ -70,7 +69,56 @@
             pointer-events: auto;
         }
 
-        /* Defeat Screen Styling */
+        #start-screen {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.98));
+            backdrop-filter: blur(6px);
+        }
+
+        #start-screen h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            color: #facc15;
+            text-shadow: 0 0 15px rgba(250, 204, 21, 0.6), 3px 3px 0 #000;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            background: #2563eb;
+            color: #ffffff;
+            border: 2px solid #60a5fa;
+            padding: 12px 28px;
+            margin: 8px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn:hover {
+            background: #1d4ed8;
+            transform: scale(1.05);
+        }
+
+        .controls-info {
+            margin-top: 15px;
+            background: rgba(0,0,0,0.5);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+            font-size: 13px;
+            max-width: 650px;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .controls-info h3 {
+            color: #38bdf8;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
         #defeat-screen {
             background: linear-gradient(135deg, rgba(40, 0, 0, 0.92), rgba(120, 0, 0, 0.95));
             backdrop-filter: blur(4px);
@@ -98,7 +146,6 @@
             cursor: pointer;
         }
 
-        /* Victory Screen Styling */
         #victory-screen {
             background: linear-gradient(135deg, rgba(10, 40, 10, 0.92), rgba(20, 90, 20, 0.95));
             backdrop-filter: blur(4px);
@@ -137,7 +184,6 @@
             cursor: pointer;
         }
 
-        /* Controls Legend Bar */
         #bottom-controls-wrapper {
             margin-top: 15px;
             display: flex;
@@ -228,69 +274,6 @@
             background: #a855f7;
         }
 
-        /* Virtual Mobile D-Pad and Action Buttons */
-        #mobile-controls {
-            display: none;
-            width: 100%;
-            max-width: 900px;
-            margin-top: 10px;
-            justify-content: space-between;
-            align-items: center;
-            touch-action: none;
-        }
-
-        .touch-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        .touch-btn {
-            background: rgba(30, 41, 59, 0.85);
-            color: #ffffff;
-            border: 2px solid #475569;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            active: scale(0.95);
-            min-width: 50px;
-            min-height: 50px;
-        }
-
-        .touch-btn:active, .touch-btn.pressed {
-            background: #3b82f6;
-            border-color: #60a5fa;
-            transform: scale(0.95);
-        }
-
-        .btn-shoot {
-            background: rgba(14, 116, 144, 0.85);
-            border-color: #06b6d4;
-        }
-
-        .btn-parry {
-            background: rgba(2, 132, 199, 0.85);
-            border-color: #38bdf8;
-        }
-
-        .btn-pot {
-            background: rgba(22, 163, 74, 0.85);
-            border-color: #4ade80;
-        }
-
-        /* Show mobile controls on mobile/touch screens or small viewports */
-        @media (max-width: 768px), (pointer: coarse) {
-            #mobile-controls {
-                display: flex;
-            }
-            #controls-bar {
-                display: none;
-            }
-        }
-
         @keyframes pulseDefeat {
             0% { transform: scale(0.98); }
             100% { transform: scale(1.03); }
@@ -307,6 +290,21 @@
 <div id="game-wrapper">
     <canvas id="gameCanvas" width="900" height="500"></canvas>
 
+    <!-- MODE SELECTION OVERLAY -->
+    <div id="start-screen" class="overlay active">
+        <h1>THE READY RED APPLE</h1>
+        <p style="margin-bottom: 15px; color: #cbd5e1;">Select Game Mode to Begin</p>
+        <div>
+            <button class="mode-btn" onclick="startGame(1)">1 Player Mode</button>
+            <button class="mode-btn" onclick="startGame(2)">2 Player Mode</button>
+        </div>
+        <div class="controls-info">
+            <h3>🎮 CONTROLS</h3>
+            <p><strong>Player 1 (Apple):</strong> <span class="key">A</span> Left | <span class="key">D</span> Right | <span class="key">W</span> Jump | <span class="key">S</span> Crouch | <span class="key">SPACE</span> / <span class="key">G</span> Shoot | <span class="key">Q</span> Special | <span class="key">E</span> Parry</p>
+            <p style="margin-top: 4px;"><strong>Player 2 (Boss Control):</strong> <span class="key">I</span> Attack 1 | <span class="key">O</span> Attack 2</p>
+        </div>
+    </div>
+
     <!-- DEFEAT OVERLAY -->
     <div id="defeat-screen" class="overlay">
         <h1>YOU HAVE BEEN DEFEATED</h1>
@@ -316,28 +314,12 @@
     <!-- VICTORY OVERLAY -->
     <div id="victory-screen" class="overlay">
         <h1>KNOCKOUT!</h1>
-        <p class="subtext">you have defeated him</p>
+        <p class="subtext">You have defeated the Banana Boss!</p>
         <p class="restart" onclick="resetGame()">Press <span class="key">R</span> or Tap Here to Play Again</p>
     </div>
 </div>
 
-<!-- TOUCH CONTROLS FOR MOBILE DEVICES -->
-<div id="mobile-controls">
-    <div class="touch-group">
-        <button class="touch-btn" id="btn-left">◀</button>
-        <button class="touch-btn" id="btn-right">▶</button>
-        <button class="touch-btn" id="btn-crouch">▼</button>
-        <button class="touch-btn" id="btn-jump">▲</button>
-    </div>
-    <div class="touch-group">
-        <button class="touch-btn btn-shoot" id="btn-shoot">💥</button>
-        <button class="touch-btn btn-parry" id="btn-parry">🛡️</button>
-        <button class="touch-btn btn-pot" id="btn-pot">🪴</button>
-    </div>
-</div>
-
 <div id="bottom-controls-wrapper">
-    <!-- HEARTS DISPLAY -->
     <div id="hearts-display">
         <span style="font-size:12px; font-weight:bold; color:#f8fafc; margin-right:4px;">HEALTH:</span>
         <span class="heart-icon">❤️</span>
@@ -345,26 +327,25 @@
         <span class="heart-icon">❤️</span>
     </div>
 
-    <!-- AUDIO CONTROLS -->
     <div id="audio-controls">
         <button id="music-btn" class="audio-btn" onclick="toggleMusic()">🎵 Music: OFF</button>
         <button id="track-btn" class="audio-btn" onclick="cycleTrack()">🎶 Track: Classic Hero</button>
     </div>
 
-    <!-- CONTROLS LEGEND BAR -->
     <div id="controls-bar">
-        <div><span class="key">A</span> / <span class="key">D</span> or <span class="key">←</span> / <span class="key">→</span> Move</div>
-        <div><span class="key">Q</span> Jump</div>
-        <div><span class="key">S</span> or <span class="key">↓</span> Crouch (Dodge High)</div>
-        <div><span class="key parry-key">E</span> / <span class="key parry-key">W</span> Parry (Survive Shockwave!)</div>
-        <div><span class="key">Space</span> Shoot</div>
-        <div><span class="key" style="background: #16a34a; border-bottom-color: #15803d; color: #fff;">F</span> Seed / Juice Beam</div>
+        <div><span class="key">A</span> / <span class="key">D</span> Move</div>
+        <div><span class="key">W</span> Jump</div>
+        <div><span class="key">S</span> Crouch</div>
+        <div><span class="key parry-key">E</span> Parry</div>
+        <div><span class="key">SPACE</span> / <span class="key">G</span> Shoot</div>
+        <div><span class="key">Q</span> Special</div>
+        <div><span class="key">P2: I / O</span> Boss Attacks</div>
         <div><span class="key">R</span> Restart</div>
     </div>
 </div>
 
 <script>
-// Synthesized Web Audio API Background Music
+// Audio Setup
 let audioCtx = null;
 let musicPlaying = false;
 let musicInterval = null;
@@ -393,28 +374,6 @@ const tracks = [
             196.00, 196.00, 246.94, 196.00, 261.63, 196.00, 293.66, 261.63,
             207.65, 207.65, 261.63, 207.65, 293.66, 329.63, 349.23, 392.00
         ]
-    },
-    {
-        name: "Retro Chiptune",
-        type: "square",
-        speed: 120,
-        bassType: "square",
-        notes: [
-            329.63, 440.00, 523.25, 659.25, 523.25, 440.00, 392.00, 493.88,
-            587.33, 698.46, 587.33, 493.88, 349.23, 440.00, 523.25, 698.46,
-            523.25, 440.00, 329.63, 392.00, 493.88, 659.25, 493.88, 392.00
-        ]
-    },
-    {
-        name: "Garden Groove",
-        type: "triangle",
-        speed: 160,
-        bassType: "triangle",
-        notes: [
-            261.63, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66, 349.23,
-            392.00, 440.00, 392.00, 349.23, 329.63, 392.00, 440.00, 523.25,
-            440.00, 392.00, 349.23, 293.66, 261.63, 329.63, 392.00, 261.63
-        ]
     }
 ];
 
@@ -437,13 +396,10 @@ function playNote(freq, duration = 0.12, type = 'square') {
         const gain = audioCtx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        
         gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-
         osc.start();
         osc.stop(audioCtx.currentTime + duration);
     } catch (e) {
@@ -459,7 +415,6 @@ function startMusicLoop() {
             const currentTrack = tracks[currentTrackIdx];
             const freq = currentTrack.notes[noteIdx % currentTrack.notes.length];
             playNote(freq, 0.14, currentTrack.type);
-            // Bass pulse
             if (noteIdx % 3 === 0) {
                 playNote(freq / 2, 0.2, currentTrack.bassType);
             }
@@ -471,12 +426,9 @@ function startMusicLoop() {
 function cycleTrack() {
     initAudio();
     currentTrackIdx = (currentTrackIdx + 1) % tracks.length;
-    const trackBtn = document.getElementById('track-btn');
-    trackBtn.innerText = `🎶 Track: ${tracks[currentTrackIdx].name}`;
+    document.getElementById('track-btn').innerText = `🎶 Track: ${tracks[currentTrackIdx].name}`;
     noteIdx = 0;
-    if (musicPlaying) {
-        startMusicLoop();
-    }
+    if (musicPlaying) startMusicLoop();
 }
 
 function toggleMusic() {
@@ -497,124 +449,85 @@ function toggleMusic() {
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+const startScreen = document.getElementById('start-screen');
 const defeatScreen = document.getElementById('defeat-screen');
 const victoryScreen = document.getElementById('victory-screen');
 
-// Game states: 'PLAYING', 'DEFEATED', 'VICTORY'
-let gameState = 'PLAYING';
+let gameState = 'MENU';
+let gameMode = 1;
 
-// World Constants
 const GROUND_Y = 420;
 const CANVAS_WIDTH = canvas.width;
 const CANVAS_HEIGHT = canvas.height;
 
-// Input handling
+let screenShakeTimer = 0;
+let screenShakeIntensity = 0;
+
+function triggerScreenShake(intensity = 6, duration = 15) {
+    screenShakeIntensity = intensity;
+    screenShakeTimer = duration;
+}
+
 const keys = {
     left: false,
     right: false,
     crouch: false,
     jump: false,
     shoot: false,
-    shootPressed: false,
     parry: false,
-    parryPressed: false,
-    usePot: false,
-    usePotPressed: false
+    special: false,
+    bossAttackI: false,
+    bossAttackO: false
 };
 
 window.addEventListener('keydown', (e) => {
     initAudio();
-    if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
-    if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
-    if (e.code === 'ArrowDown' || e.code === 'KeyS') keys.crouch = true;
-    if (e.code === 'KeyQ') keys.jump = true;
-    if (e.code === 'KeyE' || e.code === 'KeyW') {
-        if (!keys.parryPressed && gameState === 'PLAYING') {
-            triggerParry();
-        }
-        keys.parry = true;
-        keys.parryPressed = true;
-    }
-    if (e.code === 'KeyF') {
-        if (!keys.usePotPressed && gameState === 'PLAYING') {
-            useFlowerPot();
-        }
-        keys.usePot = true;
-        keys.usePotPressed = true;
-    }
-    if (e.code === 'Space') {
-        if (!keys.shootPressed && gameState === 'PLAYING') {
-            shootPlayerBullet();
-        }
+    if (e.code === 'KeyA') keys.left = true;
+    if (e.code === 'KeyD') keys.right = true;
+    if (e.code === 'KeyS') keys.crouch = true;
+    if (e.code === 'KeyW') keys.jump = true;
+    
+    // SPACEBAR and G KEY support for shooting
+    if (e.code === 'Space' || e.code === 'KeyG') {
         keys.shoot = true;
-        keys.shootPressed = true;
-        e.preventDefault();
+        // Prevent web page from scrolling on Spacebar press
+        if (e.code === 'Space') e.preventDefault();
     }
-    if (e.code === 'KeyR') {
-        if (gameState !== 'PLAYING') {
-            resetGame();
-        }
+
+    if (e.code === 'KeyE') {
+        if (!keys.parry && gameState === 'PLAYING') triggerParry();
+        keys.parry = true;
+    }
+    if (e.code === 'KeyQ') {
+        if (!keys.special && gameState === 'PLAYING') useSpecialAttack();
+        keys.special = true;
+    }
+
+    if (e.code === 'KeyI') {
+        if (!keys.bossAttackI && gameState === 'PLAYING' && gameMode === 2) triggerBossAttackI();
+        keys.bossAttackI = true;
+    }
+    if (e.code === 'KeyO') {
+        if (!keys.bossAttackO && gameState === 'PLAYING' && gameMode === 2) triggerBossAttackO();
+        keys.bossAttackO = true;
+    }
+
+    if (e.code === 'KeyR' && gameState !== 'PLAYING' && gameState !== 'MENU') {
+        resetGame();
     }
 });
 
 window.addEventListener('keyup', (e) => {
-    if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
-    if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
-    if (e.code === 'ArrowDown' || e.code === 'KeyS') keys.crouch = false;
-    if (e.code === 'KeyQ') keys.jump = false;
-    if (e.code === 'KeyE' || e.code === 'KeyW') {
-        keys.parry = false;
-        keys.parryPressed = false;
-    }
-    if (e.code === 'KeyF') {
-        keys.usePot = false;
-        keys.usePotPressed = false;
-    }
-    if (e.code === 'Space') {
-        keys.shoot = false;
-        keys.shootPressed = false;
-    }
+    if (e.code === 'KeyA') keys.left = false;
+    if (e.code === 'KeyD') keys.right = false;
+    if (e.code === 'KeyS') keys.crouch = false;
+    if (e.code === 'KeyW') keys.jump = false;
+    if (e.code === 'Space' || e.code === 'KeyG') keys.shoot = false;
+    if (e.code === 'KeyE') keys.parry = false;
+    if (e.code === 'KeyQ') keys.special = false;
+    if (e.code === 'KeyI') keys.bossAttackI = false;
+    if (e.code === 'KeyO') keys.bossAttackO = false;
 });
-
-// Mobile Touch Control Bindings
-function bindTouchButton(btnId, keyName, onPress) {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-
-    const start = (e) => {
-        e.preventDefault();
-        initAudio();
-        btn.classList.add('pressed');
-        if (onPress && !keys[keyName] && gameState === 'PLAYING') {
-            onPress();
-        }
-        keys[keyName] = true;
-    };
-
-    const end = (e) => {
-        e.preventDefault();
-        btn.classList.remove('pressed');
-        keys[keyName] = false;
-        if (keyName === 'shoot') keys.shootPressed = false;
-        if (keyName === 'parry') keys.parryPressed = false;
-        if (keyName === 'usePot') keys.usePotPressed = false;
-    };
-
-    btn.addEventListener('touchstart', start, { passive: false });
-    btn.addEventListener('touchend', end, { passive: false });
-    btn.addEventListener('touchcancel', end, { passive: false });
-    btn.addEventListener('mousedown', start);
-    btn.addEventListener('mouseup', end);
-    btn.addEventListener('mouseleave', end);
-}
-
-bindTouchButton('btn-left', 'left');
-bindTouchButton('btn-right', 'right');
-bindTouchButton('btn-crouch', 'crouch');
-bindTouchButton('btn-jump', 'jump');
-bindTouchButton('btn-shoot', 'shoot', shootPlayerBullet);
-bindTouchButton('btn-parry', 'parry', triggerParry);
-bindTouchButton('btn-pot', 'usePot', useFlowerPot);
 
 const player = {
     x: 120,
@@ -644,9 +557,50 @@ const player = {
     capeAngle: 0
 };
 
-// Player Projectiles & Juice Beam State
+const PHASE_HP = {
+    p1: 225,
+    p2: 300,
+    p3: 325
+};
+
+const boss = {
+    x: 650,
+    y: GROUND_Y - 160,
+    homeX: 650,
+    homeY: GROUND_Y - 160,
+    width: 120,
+    height: 160,
+    baseWidth: 120,
+    baseHeight: 160,
+    hp: PHASE_HP.p1 + PHASE_HP.p2 + PHASE_HP.p3,
+    maxHp: PHASE_HP.p1 + PHASE_HP.p2 + PHASE_HP.p3,
+    phase: 1,
+    color: '#facc15',
+    vx: 2.2,
+    vy: 0,
+    attackTimer: 0,
+    attackInterval: 120,
+    // Dual Attack Cooldown Management
+    cdAttackI: 0,
+    cdAttackO: 0,
+    maxCdAttackI: 120,
+    maxCdAttackO: 150,
+    floatAngle: 0,
+    slamState: 'idle',
+    flashTimer: 0,
+    shockwaveTimer: 1500,
+    warningTimer: 0,
+    poisonTimer: 0,
+    poisonTickTimer: 0,
+    greenTintTimer: 0,
+    rollState: 'none',
+    rollAngle: 0,
+    gunTimer: 0
+};
+
 let playerBullets = [];
 let bossProjectiles = [];
+let bossMinions = [];
 let particles = [];
 let floatingTexts = [];
 let backgroundFloatingLeaves = [];
@@ -662,6 +616,12 @@ for (let i = 0; i < 15; i++) {
         rot: Math.random() * Math.PI * 2,
         rotSpeed: 0.01 + Math.random() * 0.03
     });
+}
+
+function startGame(mode) {
+    gameMode = mode;
+    startScreen.classList.remove('active');
+    resetGame();
 }
 
 function spawnParticles(x, y, color, count = 10, speedMult = 1) {
@@ -760,32 +720,7 @@ function updatePlayer() {
     }
 }
 
-const boss = {
-    x: 650,
-    y: GROUND_Y - 160,
-    width: 120,
-    height: 160,
-    baseWidth: 120,
-    baseHeight: 160,
-    hp: 675,
-    maxHp: 675,
-    phase: 1,
-    color: '#ff9800',
-    vx: 2.2,
-    vy: 0,
-    attackTimer: 0,
-    attackInterval: 100,
-    floatAngle: 0,
-    slamState: 'idle',
-    flashTimer: 0,
-    shockwaveTimer: 1500,
-    warningTimer: 0,
-    poisonTimer: 0,
-    poisonTickTimer: 0,
-    greenTintTimer: 0
-};
-
-function useFlowerPot() {
+function useSpecialAttack() {
     if (player.flowerPots < 1) return;
 
     if (player.flowerPots >= 5) {
@@ -819,22 +754,34 @@ function useFlowerPot() {
 }
 
 function checkBossPhaseAndDefeat() {
-    if (boss.hp <= 525 && boss.phase === 1) {
+    const hpPhase2Threshold = PHASE_HP.p2 + PHASE_HP.p3;
+    const hpPhase3Threshold = PHASE_HP.p3;
+
+    if (boss.hp <= hpPhase2Threshold && boss.phase === 1) {
         boss.phase = 2;
         boss.color = '#e65100';
         boss.vx = 4.5;
         boss.attackInterval = 55;
+        boss.maxCdAttackI = 90;
+        boss.maxCdAttackO = 140;
+        boss.cdAttackI = 0;
+        boss.cdAttackO = 0;
         spawnParticles(boss.x + boss.width/2, boss.y + boss.height/2, '#e65100', 30, 2);
         spawnFloatingText(CANVAS_WIDTH / 2, 100, 'PHASE 2!', '#f97316');
-    } else if (boss.hp <= 300 && boss.phase === 2) {
+    } else if (boss.hp <= hpPhase3Threshold && boss.phase === 2) {
         boss.phase = 3;
         boss.color = '#ffd600';
         boss.width = 130;
         boss.height = 170;
         boss.vx = 5;
         boss.vy = 0;
-        boss.attackInterval = 42;
-        boss.shockwaveTimer = 1200;
+        boss.attackInterval = 120;
+        boss.maxCdAttackI = 180;
+        boss.maxCdAttackO = 120;
+        boss.cdAttackI = 0;
+        boss.cdAttackO = 0;
+        boss.rollState = 'none';
+        boss.gunTimer = 0;
         spawnParticles(boss.x + boss.width/2, boss.y + boss.height/2, '#ffd600', 45, 3);
         spawnFloatingText(CANVAS_WIDTH / 2, 100, 'FINAL PHASE!', '#eab308');
     } else if (boss.hp <= 0) {
@@ -874,7 +821,7 @@ function shootPlayerBullet() {
         const prevPots = Math.floor(player.flowerPots);
         player.flowerPots = Math.min(player.maxFlowerPots, player.flowerPots + 0.05);
         if (Math.floor(player.flowerPots) > prevPots) {
-            spawnFloatingText(player.x + player.width / 2, player.y - 35, '+1 POT READY!', '#84cc16');
+            spawnFloatingText(player.x + player.width / 2, player.y - 35, '+1 SPECIAL READY!', '#84cc16');
         }
     }
 
@@ -920,24 +867,34 @@ function resetGame() {
     player.capeAngle = 0;
 
     juiceBeamActive = 0;
+    screenShakeTimer = 0;
+    screenShakeIntensity = 0;
 
     playerBullets = [];
     bossProjectiles = [];
+    bossMinions = [];
     particles = [];
     floatingTexts = [];
 
+    const totalHp = PHASE_HP.p1 + PHASE_HP.p2 + PHASE_HP.p3;
     boss.x = 650;
     boss.y = GROUND_Y - boss.baseHeight;
+    boss.homeX = 650;
+    boss.homeY = GROUND_Y - boss.baseHeight;
     boss.width = boss.baseWidth;
     boss.height = boss.baseHeight;
-    boss.hp = 675;
-    boss.maxHp = 675;
+    boss.hp = totalHp;
+    boss.maxHp = totalHp;
     boss.phase = 1;
-    boss.color = '#ff9800';
+    boss.color = '#facc15';
     boss.vx = 2.2;
     boss.vy = 0;
     boss.attackTimer = 0;
-    boss.attackInterval = 100;
+    boss.attackInterval = 120;
+    boss.cdAttackI = 0;
+    boss.cdAttackO = 0;
+    boss.maxCdAttackI = 120;
+    boss.maxCdAttackO = 150;
     boss.floatAngle = 0;
     boss.slamState = 'idle';
     boss.flashTimer = 0;
@@ -946,12 +903,128 @@ function resetGame() {
     boss.poisonTimer = 0;
     boss.poisonTickTimer = 0;
     boss.greenTintTimer = 0;
+
+    boss.rollState = 'none';
+    boss.rollAngle = 0;
+    boss.gunTimer = 0;
+}
+
+function fireBananaPeel() {
+    const gunX = boss.x;
+    const gunY = boss.y + boss.height / 2;
+    
+    // Banana peel projectile with passedPlayer tracking logic
+    bossProjectiles.push({
+        type: 'tracking_banana_peel',
+        x: gunX,
+        y: gunY,
+        vx: -5,
+        vy: -1,
+        speed: 5.5,
+        radius: 12,
+        rot: 0,
+        passedPlayer: false
+    });
+    triggerScreenShake(7, 12);
+    spawnParticles(gunX, gunY, '#facc15', 12, 1.5);
+}
+
+// Boss Attack I Trigger
+function triggerBossAttackI() {
+    if (boss.cdAttackI > 0) return;
+
+    if (boss.phase === 3) {
+        if (boss.rollState !== 'none' || boss.gunTimer > 0) return;
+        boss.rollState = 'rolling_left';
+        boss.cdAttackI = boss.maxCdAttackI;
+        spawnFloatingText(boss.x + boss.width / 2, boss.y - 20, '🌀 MEGA ROLL! 🌀', '#facc15');
+        return;
+    }
+
+    if (boss.phase === 1) {
+        spawnFloatingText(boss.x + boss.width / 2, boss.y - 20, '🍌 BANANA TWIN SHOT! 🍌', '#facc15');
+        const spitX = boss.x + 10;
+        const spitY = boss.y + boss.height * 0.55;
+        for (let b = 0; b < 2; b++) {
+            bossProjectiles.push({
+                type: 'bouncing_banana',
+                x: spitX,
+                y: spitY,
+                vx: -4.5 - b * 1.5,
+                vy: -3.5 - Math.random() * 2,
+                radius: 15,
+                bounces: 0,
+                lifeTimer: 600,
+                drifting: false,
+                rot: Math.random() * Math.PI * 2,
+                rotSpeed: 0.18
+            });
+        }
+        spawnParticles(spitX, spitY, '#facc15', 15, 1.5);
+    } else if (boss.phase === 2) {
+        bossProjectiles.push({
+            type: 'chunk',
+            x: boss.x,
+            y: GROUND_Y - 55,
+            vx: -9,
+            vy: 0,
+            radius: 14,
+            color: '#d97706',
+            rot: Math.random() * Math.PI
+        });
+    }
+    boss.cdAttackI = boss.maxCdAttackI;
+}
+
+// Boss Attack O Trigger
+function triggerBossAttackO() {
+    if (boss.cdAttackO > 0) return;
+
+    if (boss.phase === 3) {
+        if (boss.rollState !== 'none' || boss.gunTimer > 0) return;
+        boss.gunTimer = 60;
+        fireBananaPeel();
+        boss.cdAttackO = boss.maxCdAttackO;
+        spawnFloatingText(boss.x + boss.width / 2, boss.y - 20, '🔫 BANANA GUN! 🔫', '#facc15');
+        return;
+    }
+
+    if (boss.phase === 1) {
+        spawnFloatingText(CANVAS_WIDTH / 2, 100, '⚠️ CROSS MINIONS! ⚠️', '#facc15');
+        bossMinions.push({
+            x: -40,
+            y: GROUND_Y - 45,
+            width: 32,
+            height: 45,
+            vx: 3.5,
+            lifeTimer: 900,
+            drifting: false,
+            animTimer: 0
+        });
+        bossMinions.push({
+            x: CANVAS_WIDTH + 40,
+            y: GROUND_Y - 45,
+            width: 32,
+            height: 45,
+            vx: -3.5,
+            lifeTimer: 900,
+            drifting: false,
+            animTimer: 0
+        });
+    } else if (boss.phase === 2) {
+        boss.slamState = 'rising';
+    }
+    boss.cdAttackO = boss.maxCdAttackO;
 }
 
 function updateBoss() {
     if (boss.flashTimer > 0) boss.flashTimer--;
     if (boss.warningTimer > 0) boss.warningTimer--;
     if (boss.greenTintTimer > 0) boss.greenTintTimer--;
+    
+    // Decrement Individual Boss Cooldowns
+    if (boss.cdAttackI > 0) boss.cdAttackI--;
+    if (boss.cdAttackO > 0) boss.cdAttackO--;
 
     if (boss.poisonTimer > 0) {
         boss.poisonTimer--;
@@ -976,37 +1049,14 @@ function updateBoss() {
             boss.vx *= -1;
         }
 
-        boss.attackTimer++;
-        if (boss.attackTimer >= boss.attackInterval) {
-            boss.attackTimer = 0;
-
-            if (Math.random() < 0.5) {
-                bossProjectiles.push({
-                    type: 'homing_chunk',
-                    x: boss.x,
-                    y: GROUND_Y - 55,
-                    vx: -4.5,
-                    vy: 0,
-                    radius: 10,
-                    color: '#f59e0b',
-                    rot: Math.random() * Math.PI
-                });
-                spawnParticles(boss.x, GROUND_Y - 55, '#f59e0b', 8);
-            } else {
-                spawnFloatingText(boss.x + boss.width / 2, boss.y - 20, '⚠️ LEAF RAIN! ⚠️', '#4ade80');
-                for (let l = 0; l < 3; l++) {
-                    const dropX = 60 + Math.random() * (CANVAS_WIDTH - 160);
-                    bossProjectiles.push({
-                        type: 'falling_leaf',
-                        x: dropX,
-                        y: -30 - Math.random() * 40,
-                        vx: (Math.random() - 0.5) * 1.0,
-                        vy: 2.0 + Math.random() * 1.2,
-                        radius: 16,
-                        color: '#4ade80',
-                        rot: Math.random() * Math.PI * 2,
-                        rotSpeed: 0.04 + Math.random() * 0.04
-                    });
+        if (gameMode === 1) {
+            boss.attackTimer++;
+            if (boss.attackTimer >= boss.attackInterval) {
+                boss.attackTimer = 0;
+                if (Math.random() < 0.5 && boss.cdAttackI <= 0) {
+                    triggerBossAttackI();
+                } else if (boss.cdAttackO <= 0) {
+                    triggerBossAttackO();
                 }
             }
         }
@@ -1019,24 +1069,15 @@ function updateBoss() {
                 boss.vx *= -1;
             }
 
-            boss.attackTimer++;
-            if (boss.attackTimer >= boss.attackInterval) {
-                boss.attackTimer = 0;
-                
-                if (Math.random() < 0.45) {
-                    boss.slamState = 'rising';
-                } else {
-                    const isHigh = Math.random() < 0.5;
-                    bossProjectiles.push({
-                        type: isHigh ? 'chunk' : 'wave',
-                        x: boss.x,
-                        y: isHigh ? GROUND_Y - 55 : GROUND_Y - 20,
-                        vx: -9,
-                        vy: 0,
-                        radius: isHigh ? 13 : 16,
-                        color: isHigh ? '#d97706' : '#ea580c',
-                        rot: Math.random() * Math.PI
-                    });
+            if (gameMode === 1) {
+                boss.attackTimer++;
+                if (boss.attackTimer >= boss.attackInterval) {
+                    boss.attackTimer = 0;
+                    if (Math.random() < 0.45 && boss.cdAttackO <= 0) {
+                        triggerBossAttackO();
+                    } else if (boss.cdAttackI <= 0) {
+                        triggerBossAttackI();
+                    }
                 }
             }
         } else if (boss.slamState === 'rising') {
@@ -1069,55 +1110,43 @@ function updateBoss() {
             }
         }
     } else if (boss.phase === 3) {
-        boss.shockwaveTimer--;
-
-        if (boss.shockwaveTimer <= 0 && boss.slamState === 'idle') {
-            boss.slamState = 'shockwave_prep';
-            boss.warningTimer = 120;
-            spawnFloatingText(CANVAS_WIDTH / 2, 120, '⚠️ WARNING: MEGA SHOCKWAVE! ⚠️', '#ef4444');
+        if (boss.rollState === 'rolling_left') {
+            boss.height = 90;
+            boss.y = GROUND_Y - boss.height;
+            boss.x -= 14;
+            boss.rollAngle -= 0.25;
+            triggerScreenShake(4, 2);
+            if (boss.x + boss.width < -50) {
+                boss.rollState = 'reappearing_right';
+                boss.x = CANVAS_WIDTH + 50;
+            }
+            return;
+        } else if (boss.rollState === 'reappearing_right') {
+            boss.height = 90;
+            boss.y = GROUND_Y - boss.height;
+            boss.x -= 14;
+            boss.rollAngle -= 0.25;
+            triggerScreenShake(4, 2);
+            if (boss.x <= boss.homeX) {
+                boss.x = boss.homeX;
+                boss.rollState = 'returning';
+            }
+            return;
+        } else if (boss.rollState === 'returning') {
+            boss.height = boss.baseHeight;
+            boss.y -= 3;
+            boss.rollAngle *= 0.8;
+            if (boss.y <= boss.homeY) {
+                boss.y = boss.homeY;
+                boss.rollState = 'none';
+                boss.rollAngle = 0;
+            }
+            return;
         }
 
-        if (boss.slamState === 'shockwave_prep') {
-            boss.warningTimer = Math.max(boss.warningTimer, 10);
-            const targetX = CANVAS_WIDTH / 2 - boss.width / 2;
-            boss.x += (targetX - boss.x) * 0.1;
-            boss.y -= 5;
-            if (boss.y <= 50) {
-                boss.slamState = 'shockwave_slam';
-            }
-        } else if (boss.slamState === 'shockwave_slam') {
-            boss.y += 26;
-            if (boss.y >= GROUND_Y - boss.height) {
-                boss.y = GROUND_Y - boss.height;
-                boss.slamState = 'recovering';
-                boss.shockwaveTimer = 2100;
-
-                bossProjectiles.push({
-                    type: 'instakill_shockwave',
-                    x: boss.x + boss.width / 2,
-                    y: GROUND_Y - 25,
-                    vx: -14,
-                    vy: 0,
-                    radius: 35,
-                    width: 70,
-                    height: 50,
-                    color: '#ff0000'
-                });
-
-                bossProjectiles.push({
-                    type: 'instakill_shockwave',
-                    x: boss.x + boss.width / 2,
-                    y: GROUND_Y - 25,
-                    vx: 14,
-                    vy: 0,
-                    radius: 35,
-                    width: 70,
-                    height: 50,
-                    color: '#ff0000'
-                });
-
-                spawnParticles(boss.x + boss.width / 2, GROUND_Y - 10, '#ff3333', 35, 3);
-            }
+        if (boss.gunTimer > 0) {
+            boss.gunTimer--;
+            boss.y = (GROUND_Y - boss.height - 20) + Math.sin(boss.floatAngle * 2.5) * 12;
         } else {
             boss.x += boss.vx;
             boss.y = (GROUND_Y - boss.height - 20) + Math.sin(boss.floatAngle * 2.5) * 12;
@@ -1127,32 +1156,16 @@ function updateBoss() {
                 spawnParticles(boss.x + (boss.vx < 0 ? boss.width : 0), boss.y + boss.height/2, '#ffd600', 8);
             }
 
-            boss.attackTimer++;
-            if (boss.attackTimer >= boss.attackInterval) {
-                boss.attackTimer = 0;
-
-                const targetX = player.x + player.width / 2;
-                const targetY = player.isCrouching ? player.y + 15 : player.y + 35;
-                const originX = boss.x + boss.width / 2;
-                const originY = boss.y + boss.height / 2;
-
-                const baseAngle = Math.atan2(targetY - originY, targetX - originX);
-
-                [-0.15, 0.15].forEach(angleOffset => {
-                    const finalAngle = baseAngle + angleOffset;
-                    bossProjectiles.push({
-                        type: 'chunk',
-                        x: originX,
-                        y: originY,
-                        vx: Math.cos(finalAngle) * 7.5,
-                        vy: Math.sin(finalAngle) * 7.5,
-                        radius: 12,
-                        color: '#fbbf24',
-                        rot: Math.random() * Math.PI
-                    });
-                });
-
-                spawnParticles(originX, originY, '#fbbf24', 8);
+            if (gameMode === 1) {
+                boss.attackTimer++;
+                if (boss.attackTimer >= boss.attackInterval) {
+                    boss.attackTimer = 0;
+                    if (Math.random() < 0.5 && boss.cdAttackI <= 0) {
+                        triggerBossAttackI();
+                    } else if (boss.cdAttackO <= 0) {
+                        triggerBossAttackO();
+                    }
+                }
             }
         }
     }
@@ -1184,6 +1197,45 @@ function updateProjectilesAndCollisions() {
                 gameState = 'DEFEATED';
                 defeatScreen.classList.add('active');
             }
+        }
+    }
+
+    for (let i = bossMinions.length - 1; i >= 0; i--) {
+        let m = bossMinions[i];
+        m.lifeTimer--;
+        m.animTimer += 0.15;
+
+        if (!m.drifting) {
+            m.x += m.vx;
+            if (m.lifeTimer <= 0) {
+                m.drifting = true;
+            }
+        } else {
+            m.x += m.vx * 1.5;
+            m.y -= 1.5;
+        }
+
+        if (!m.drifting && player.flashTimer <= 0 && gameState === 'PLAYING') {
+            if (player.x + player.width > m.x &&
+                player.x < m.x + m.width &&
+                player.y + player.height > m.y &&
+                player.y < m.y + m.height) {
+
+                player.hp -= 1;
+                player.flashTimer = 35;
+                spawnParticles(player.x + player.width / 2, player.y + player.height / 2, '#ef4444', 15, 2);
+                spawnFloatingText(player.x + player.width / 2, player.y - 20, '-1 HEART', '#ef4444');
+
+                if (player.hp <= 0) {
+                    player.hp = 0;
+                    gameState = 'DEFEATED';
+                    defeatScreen.classList.add('active');
+                }
+            }
+        }
+
+        if (m.x > CANVAS_WIDTH + 150 || m.x < -150) {
+            bossMinions.splice(i, 1);
         }
     }
 
@@ -1232,12 +1284,10 @@ function updateProjectilesAndCollisions() {
                 } else {
                     spawnParticles(b.x, b.y, '#38bdf8', 5, 1.2);
                 }
-                
                 spawnParticles(b.x, b.y, boss.color, 4, 1);
             }
 
             playerBullets.splice(i, 1);
-
             checkBossPhaseAndDefeat();
             continue;
         }
@@ -1250,26 +1300,71 @@ function updateProjectilesAndCollisions() {
     for (let i = bossProjectiles.length - 1; i >= 0; i--) {
         let p = bossProjectiles[i];
 
-        if (p.type === 'homing_chunk') {
-            const targetX = player.x + player.width / 2;
-            if (p.x > targetX && !p.hasPassed) {
-                const targetY = player.isCrouching ? player.y + 15 : player.y + 35;
-                const dx = targetX - p.x;
-                const dy = targetY - p.y;
-                const angle = Math.atan2(dy, dx);
-                
-                p.vx = p.vx * 0.96 + Math.cos(angle) * 0.22;
-                p.vy = p.vy * 0.96 + Math.sin(angle) * 0.22;
-            } else {
-                p.hasPassed = true;
-            }
-        } else if (p.type === 'falling_leaf') {
-            p.rot += p.rotSpeed || 0.05;
-            p.x += p.vx + Math.sin(p.y * 0.05) * 1.2;
-        }
+        if (p.type === 'tracking_banana_peel') {
+            const playerCenterX = player.x + player.width / 2;
+            const playerCenterY = player.y + player.height / 2;
 
-        p.x += p.vx;
-        p.y += p.vy;
+            // Check if peel passed the player horizontally (moving left past player)
+            if (!p.passedPlayer && p.x < playerCenterX) {
+                p.passedPlayer = true;
+            }
+
+            if (!p.passedPlayer) {
+                // Tracking behavior until it reaches player's X coordinate
+                const dx = playerCenterX - p.x;
+                const dy = playerCenterY - p.y;
+                const dist = Math.hypot(dx, dy);
+
+                if (dist > 0) {
+                    p.vx = (dx / dist) * p.speed;
+                    p.vy = (dy / dist) * p.speed;
+                }
+            }
+            // Once passed, continues in current vx/vy vector off screen
+
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += 0.12;
+        } else if (p.type === 'bouncing_banana') {
+            p.rot += p.rotSpeed;
+            if (p.lifeTimer > 0) {
+                p.lifeTimer--;
+            } else {
+                p.drifting = true;
+            }
+
+            if (!p.drifting) {
+                p.vy += 0.3;
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x - p.radius <= 0 && p.vx < 0) {
+                    p.vx *= -1;
+                    p.bounces++;
+                    spawnParticles(p.x, p.y, '#facc15', 5, 0.8);
+                } else if (p.x + p.radius >= CANVAS_WIDTH && p.vx > 0) {
+                    p.vx *= -1;
+                    p.bounces++;
+                    spawnParticles(p.x, p.y, '#facc15', 5, 0.8);
+                }
+
+                if (p.y + p.radius >= GROUND_Y && p.vy > 0) {
+                    p.vy *= -0.85;
+                    p.bounces++;
+                    spawnParticles(p.x, GROUND_Y, '#facc15', 5, 0.8);
+                } else if (p.y - p.radius <= 0 && p.vy < 0) {
+                    p.vy *= -1;
+                    p.bounces++;
+                    spawnParticles(p.x, p.y, '#facc15', 5, 0.8);
+                }
+            } else {
+                p.x += p.vx * 1.2;
+                p.y -= 1.5;
+            }
+        } else {
+            p.x += p.vx;
+            p.y += p.vy;
+        }
 
         const isParrying = player.parryWindow > 0;
         const parryMargin = isParrying ? 40 : 0;
@@ -1330,7 +1425,7 @@ function updateProjectilesAndCollisions() {
             }
         }
 
-        if (p.x < -40 || p.x > CANVAS_WIDTH + 40 || p.y > GROUND_Y + 40 || p.y < -40) {
+        if (p.x < -100 || p.x > CANVAS_WIDTH + 100 || p.y > GROUND_Y + 100 || p.y < -100) {
             bossProjectiles.splice(i, 1);
         }
     }
@@ -1609,14 +1704,49 @@ function drawPlayer() {
     ctx.fill();
     ctx.stroke();
 
-    ctx.strokeStyle = '#94a3b8';
-    ctx.lineWidth = 1.5;
+    ctx.restore();
+}
+
+function drawBananaBody(ctx, cx, cy, w, h, fillStyle) {
+    ctx.fillStyle = fillStyle;
     ctx.beginPath();
-    ctx.moveTo(armX + 19, armY - 3);
-    ctx.lineTo(armX + 23, armY - 3);
-    ctx.moveTo(armX + 19, armY + 3);
-    ctx.lineTo(armX + 23, armY + 3);
+    ctx.moveTo(cx - w * 0.4, cy - h * 0.4);
+    ctx.quadraticCurveTo(cx - w * 0.6, cy + h * 0.2, cx, cy + h * 0.5);
+    ctx.quadraticCurveTo(cx + w * 0.6, cy + h * 0.2, cx + w * 0.3, cy - h * 0.4);
+    ctx.quadraticCurveTo(cx, cy - h * 0.1, cx - w * 0.4, cy - h * 0.4);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#65a30d';
+    ctx.fillRect(cx - w * 0.08, cy - h * 0.52, w * 0.16, h * 0.14);
+}
+
+function drawBananaGun(ctx, x, y, w, h) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+
+    ctx.fillStyle = '#facc15';
+    ctx.strokeStyle = '#ca8a04';
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.rect(-w * 0.6, -h * 0.15, w * 0.7, h * 0.3);
+    ctx.fill();
     ctx.stroke();
+
+    ctx.fillStyle = '#854d0e';
+    ctx.fillRect(-w * 0.7, -h * 0.18, w * 0.12, h * 0.36);
+
+    ctx.fillStyle = '#eab308';
+    ctx.beginPath();
+    ctx.rect(-w * 0.1, 0, w * 0.25, h * 0.45);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath();
+    ctx.arc(-w * 0.15, -h * 0.05, 7, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.restore();
 }
@@ -1632,6 +1762,27 @@ function drawBoss() {
     const y = boss.y;
     const w = boss.width;
     const h = boss.height;
+
+    if (boss.phase === 3 && boss.rollState !== 'none') {
+        ctx.save();
+        ctx.translate(x + w / 2, y + h / 2);
+        ctx.rotate(boss.rollAngle);
+
+        ctx.fillStyle = '#facc15';
+        ctx.strokeStyle = '#ca8a04';
+        ctx.lineWidth = 4;
+        drawBananaBody(ctx, 0, 0, w, h, '#facc15');
+
+        ctx.restore();
+        ctx.restore();
+        return;
+    }
+
+    if (boss.phase === 3 && boss.gunTimer > 0) {
+        drawBananaGun(ctx, x, y, w, h);
+        ctx.restore();
+        return;
+    }
 
     if (boss.warningTimer > 0 || boss.slamState === 'shockwave_prep') {
         ctx.fillStyle = 'rgba(239, 68, 68, 0.35)';
@@ -1657,47 +1808,35 @@ function drawBoss() {
     }
 
     if (boss.flashTimer <= 0) {
-        const mangoGrad = ctx.createRadialGradient(
+        const bananaGrad = ctx.createRadialGradient(
             x + w * 0.4, y + h * 0.3, w * 0.1,
             x + w * 0.5, y + h * 0.5, w * 0.6
         );
         if (boss.greenTintTimer > 0) {
-            mangoGrad.addColorStop(0, '#a3e635');
-            mangoGrad.addColorStop(0.5, '#22c55e');
-            mangoGrad.addColorStop(1, '#15803d');
+            bananaGrad.addColorStop(0, '#a3e635');
+            bananaGrad.addColorStop(0.5, '#22c55e');
+            bananaGrad.addColorStop(1, '#15803d');
         } else if (boss.phase === 1) {
-            mangoGrad.addColorStop(0, '#ffe082');
-            mangoGrad.addColorStop(0.6, '#ff9800');
-            mangoGrad.addColorStop(1, '#f57c00');
+            bananaGrad.addColorStop(0, '#fef08a');
+            bananaGrad.addColorStop(0.6, '#facc15');
+            bananaGrad.addColorStop(1, '#eab308');
         } else if (boss.phase === 2) {
-            mangoGrad.addColorStop(0, '#ffb74d');
-            mangoGrad.addColorStop(0.5, '#f57c00');
-            mangoGrad.addColorStop(1, '#d84315');
+            bananaGrad.addColorStop(0, '#ffb74d');
+            bananaGrad.addColorStop(0.5, '#f57c00');
+            bananaGrad.addColorStop(1, '#d84315');
         } else {
-            mangoGrad.addColorStop(0, '#ffffff');
-            mangoGrad.addColorStop(0.4, '#ffee58');
-            mangoGrad.addColorStop(1, '#f57f17');
+            bananaGrad.addColorStop(0, '#ffffff');
+            bananaGrad.addColorStop(0.4, '#ffee58');
+            bananaGrad.addColorStop(1, '#f57f17');
         }
-        ctx.fillStyle = mangoGrad;
+        drawBananaBody(ctx, x + w / 2, y + h / 2, w, h, bananaGrad);
+    } else {
+        drawBananaBody(ctx, x + w / 2, y + h / 2, w, h, '#ffffff');
     }
 
-    ctx.beginPath();
-    ctx.moveTo(x + w * 0.5, y);
-    ctx.bezierCurveTo(x + w * 1.1, y + h * 0.2, x + w * 1.05, y + h * 0.85, x + w * 0.45, y + h);
-    ctx.bezierCurveTo(x - w * 0.1, y + h * 0.9, x - w * 0.05, y + h * 0.2, x + w * 0.5, y);
-    ctx.closePath();
-    ctx.fill();
-
     ctx.shadowBlur = 0;
-    ctx.fillStyle = '#3e2723';
-    ctx.fillRect(x + w * 0.48, y - 18, 10, 22);
 
-    ctx.fillStyle = '#2e7d32';
-    ctx.beginPath();
-    ctx.ellipse(x + w * 0.48 + 16, y - 16, 18, 7, Math.PI / 5, 0, Math.PI * 2);
-    ctx.fill();
-
-    const eyeY = y + h * 0.38;
+    const eyeY = y + h * 0.32;
     ctx.save();
     ctx.shadowColor = '#ff0000';
     ctx.shadowBlur = 18;
@@ -1730,7 +1869,7 @@ function drawBoss() {
     ctx.fill();
     ctx.restore();
 
-    const mouthY = y + h * 0.62;
+    const mouthY = y + h * 0.55;
     ctx.save();
     ctx.fillStyle = '#1a0000';
     ctx.strokeStyle = '#450a0a';
@@ -1782,6 +1921,24 @@ function drawProjectilesAndParticles() {
         ctx.restore();
     }
 
+    bossMinions.forEach(m => {
+        ctx.save();
+        ctx.translate(m.x + m.width / 2, m.y + m.height / 2);
+        const bob = Math.sin(m.animTimer * 2) * 3;
+        
+        ctx.shadowColor = '#facc15';
+        ctx.shadowBlur = 10;
+
+        drawBananaBody(ctx, 0, bob, m.width, m.height, '#facc15');
+
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.arc(6, -4 + bob, 2.5, 0, Math.PI * 2);
+        ctx.arc(-2, -4 + bob, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    });
+
     playerBullets.forEach(b => {
         if (b.type === 'apple_seed') {
             ctx.save();
@@ -1804,7 +1961,33 @@ function drawProjectilesAndParticles() {
     ctx.shadowBlur = 0;
 
     bossProjectiles.forEach(p => {
-        if (p.type === 'instakill_shockwave') {
+        if (p.type === 'tracking_banana_peel') {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot || 0);
+            ctx.fillStyle = '#facc15';
+            ctx.strokeStyle = '#ca8a04';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.arc(0, 0, p.radius, Math.PI, Math.PI * 2);
+            ctx.lineTo(p.radius * 0.8, p.radius * 0.5);
+            ctx.lineTo(0, 0);
+            ctx.lineTo(-p.radius * 0.8, p.radius * 0.5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+        } else if (p.type === 'bouncing_banana') {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot || 0);
+            ctx.shadowColor = '#facc15';
+            ctx.shadowBlur = 12;
+            drawBananaBody(ctx, 0, 0, p.radius * 2, p.radius * 2, '#facc15');
+            ctx.restore();
+        } else if (p.type === 'instakill_shockwave') {
             ctx.save();
             ctx.fillStyle = '#ef4444';
             ctx.shadowColor = '#ff0000';
@@ -1815,47 +1998,6 @@ function drawProjectilesAndParticles() {
             ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = 4;
             ctx.stroke();
-            ctx.restore();
-        } else if (p.type === 'falling_leaf') {
-            if (p.y < GROUND_Y) {
-                ctx.save();
-                ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([6, 6]);
-                ctx.beginPath();
-                ctx.moveTo(p.x, Math.max(0, p.y));
-                ctx.lineTo(p.x, GROUND_Y);
-                ctx.stroke();
-
-                ctx.fillStyle = 'rgba(239, 68, 68, 0.45)';
-                ctx.beginPath();
-                ctx.ellipse(p.x, GROUND_Y - 2, 20, 6, 0, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            ctx.rotate(p.rot || 0);
-
-            ctx.shadowColor = '#22c55e';
-            ctx.shadowBlur = 14;
-
-            ctx.fillStyle = '#4ade80';
-            ctx.strokeStyle = '#15803d';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.ellipse(0, 0, p.radius * 1.3, p.radius * 0.7, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(-p.radius, 0);
-            ctx.lineTo(p.radius, 0);
-            ctx.stroke();
-
             ctx.restore();
         } else if (p.type === 'wave') {
             ctx.fillStyle = p.color;
@@ -1932,18 +2074,18 @@ function drawHUD() {
     ctx.font = 'bold 13px "Segoe UI", sans-serif';
     if (player.parryCooldown <= 0) {
         ctx.fillStyle = '#38bdf8';
-        ctx.fillText('PARRY [E/W/🛡️]: READY', 20, 56);
+        ctx.fillText('PARRY [E]: READY', 20, 56);
     } else {
         ctx.fillStyle = '#94a3b8';
-        ctx.fillText(`PARRY [E/W/🛡️]: COOLDOWN (${parrySecsLeft}s)`, 20, 56);
+        ctx.fillText(`PARRY [E]: COOLDOWN (${parrySecsLeft}s)`, 20, 56);
     }
 
     ctx.font = 'bold 12px "Segoe UI", sans-serif';
     ctx.fillStyle = '#84cc16';
-    ctx.fillText('FLOWER POTS [F/🪴]:', 20, 82);
+    ctx.fillText('SPECIAL CHARGE [Q]:', 20, 82);
 
     for (let i = 0; i < player.maxFlowerPots; i++) {
-        const potX = 145 + i * 26;
+        const potX = 155 + i * 26;
         const potY = 70;
         const fillAmount = Math.max(0, Math.min(1, player.flowerPots - i));
 
@@ -1993,23 +2135,87 @@ function drawHUD() {
     if (player.flowerPots >= 5) {
         ctx.fillStyle = '#facc15';
         ctx.font = 'bold 12px "Segoe UI", sans-serif';
-        ctx.fillText('★ BEAM READY! ★', 280, 82);
+        ctx.fillText('★ BEAM READY! ★', 290, 82);
     }
 
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 16px "Segoe UI", sans-serif';
-    ctx.fillText(`MANGO (PHASE ${boss.phase}):`, 520, 32);
+    ctx.fillText(`BANANA BOSS (PHASE ${boss.phase}):`, 520, 26);
 
     ctx.fillStyle = '#1e293b';
-    ctx.fillRect(520, 42, 350, 22);
+    ctx.fillRect(520, 32, 350, 18);
 
     const healthPercent = Math.max(0, boss.hp / boss.maxHp);
     ctx.fillStyle = boss.greenTintTimer > 0 ? '#22c55e' : boss.color;
-    ctx.fillRect(520, 42, 350 * healthPercent, 22);
+    ctx.fillRect(520, 32, 350 * healthPercent, 18);
 
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 2;
-    ctx.strokeRect(520, 42, 350, 22);
+    ctx.strokeRect(520, 32, 350, 18);
+
+    // Dynamic Attack Labels based on Phase
+    let nameAttackI = 'BANANAS';
+    let nameAttackO = 'MINIONS';
+    if (boss.phase === 2) {
+        nameAttackI = 'CHUNK';
+        nameAttackO = 'SLAM';
+    } else if (boss.phase === 3) {
+        nameAttackI = 'MEGA ROLL';
+        nameAttackO = 'BANANA GUN';
+    }
+
+    // BOSS COOLDOWN UI 1 (ATK I)
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 11px "Segoe UI", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`ATK [I] (${nameAttackI}):`, 520, 68);
+
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(660, 58, 210, 12);
+
+    const cdRatioI = 1 - (boss.cdAttackI / boss.maxCdAttackI);
+    ctx.fillStyle = cdRatioI >= 1 ? '#22c55e' : '#f59e0b';
+    ctx.fillRect(660, 58, 210 * cdRatioI, 12);
+
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(660, 58, 210, 12);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 10px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    if (boss.cdAttackI <= 0) {
+        ctx.fillText('READY', 765, 68);
+    } else {
+        ctx.fillText(`${(boss.cdAttackI / 60).toFixed(1)}s`, 765, 68);
+    }
+
+    // BOSS COOLDOWN UI 2 (ATK O)
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 11px "Segoe UI", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`ATK [O] (${nameAttackO}):`, 520, 88);
+
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(660, 78, 210, 12);
+
+    const cdRatioO = 1 - (boss.cdAttackO / boss.maxCdAttackO);
+    ctx.fillStyle = cdRatioO >= 1 ? '#22c55e' : '#f59e0b';
+    ctx.fillRect(660, 78, 210 * cdRatioO, 12);
+
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(660, 78, 210, 12);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 10px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    if (boss.cdAttackO <= 0) {
+        ctx.fillText('READY', 765, 88);
+    } else {
+        ctx.fillText(`${(boss.cdAttackO / 60).toFixed(1)}s`, 765, 88);
+    }
+
     ctx.shadowBlur = 0;
 }
 
@@ -2020,16 +2226,25 @@ function gameLoop() {
         updateProjectilesAndCollisions();
     }
 
+    ctx.save();
+    if (screenShakeTimer > 0) {
+        screenShakeTimer--;
+        const shakeX = (Math.random() - 0.5) * screenShakeIntensity;
+        const shakeY = (Math.random() - 0.5) * screenShakeIntensity;
+        ctx.translate(shakeX, shakeY);
+    }
+
     drawEnvironment();
     drawPlayer();
     drawBoss();
     drawProjectilesAndParticles();
     drawHUD();
 
+    ctx.restore();
+
     requestAnimationFrame(gameLoop);
 }
 
-// Start Main Game Loop
 gameLoop();
 </script>
 

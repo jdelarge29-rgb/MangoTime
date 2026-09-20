@@ -335,7 +335,7 @@
 
     <div id="audio-controls">
         <button id="music-btn" class="audio-btn" onclick="toggleMusic()">🎵 Music: OFF</button>
-        <button id="track-btn" class="audio-btn" onclick="cycleTrack()">🎶 Track: Classic Hero</button>
+        <button id="track-btn" class="audio-btn" onclick="cycleTrack()">🎶 Track: Boss Action</button>
     </div>
 
     <div id="controls-bar">
@@ -384,7 +384,7 @@ const tracks = [
     }
 ];
 
-let currentTrackIdx = 0;
+let currentTrackIdx = 1; // Default to Boss Action (Index 1)
 let noteIdx = 0;
 
 function initAudio() {
@@ -636,6 +636,12 @@ for (let i = 0; i < 15; i++) {
 function startGame(mode) {
     gameMode = mode;
     startScreen.classList.remove('active');
+    
+    // Automatically enable music and play Boss Action track on game start
+    if (!musicPlaying) {
+        toggleMusic();
+    }
+    
     resetGame();
 }
 
@@ -945,10 +951,8 @@ function resetGame() {
 
 function fireBananaPeel() {
     const gunX = boss.x;
-    // Lowered projectile height so the player must crouch or jump over it
     const gunY = GROUND_Y - 30;
     
-    // Straight fast projectile traveling strictly left
     bossProjectiles.push({
         type: 'fast_banana_peel',
         x: gunX,
